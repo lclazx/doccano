@@ -1,20 +1,21 @@
 <template>
-  <v-menu
-    v-if="label"
-    v-model="showMenu"
-    offset-y
-  >
+  <v-menu v-if="label" v-model="showMenu" offset-y>
     <template v-slot:activator="{ on }">
-      <span class="highlight bottom" :style="{ borderColor: color }" v-on="on">
-        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span class="highlight__label" :data-label="label" :style="{ backgroundColor: color, color: textColor }" />
+      <span :style="{ borderColor: color }" v-on="on" class="highlight bottom">
+        <span
+          class="highlight__content"
+        >{{ content
+        }}<v-icon
+          @click.stop="remove"
+          class="delete"
+        >mdi-close-circle</v-icon></span><span
+          :data-label="label"
+          :style="{ backgroundColor: color, color: textColor }"
+          class="highlight__label"
+        />
       </span>
     </template>
-    <v-list
-      dense
-      min-width="150"
-      max-height="400"
-      class="overflow-y-auto"
-    >
+    <v-list dense min-width="150" max-height="400" class="overflow-y-auto">
       <v-list-item
         v-for="(item, i) in labels"
         :key="i"
@@ -31,6 +32,7 @@
       </v-list-item>
     </v-list>
   </v-menu>
+  <!-- eslint-disable-next-line vue/valid-template-root -->
   <span v-else>{{ content }}</span>
 </template>
 
@@ -97,7 +99,7 @@ export default {
   border: 2px solid;
   margin: 4px 6px 4px 3px;
   vertical-align: middle;
-  box-shadow: 2px 4px 20px rgba(0,0,0,.1);
+  box-shadow: 2px 4px 20px rgba(0, 0, 0, 0.1);
   position: relative;
   cursor: default;
   min-width: 26px;
@@ -105,9 +107,9 @@ export default {
   display: flex;
 }
 .highlight .delete {
-  top:-15px;
-  left:-13px;
-  position:absolute;
+  top: -15px;
+  left: -13px;
+  position: absolute;
   display: none;
 }
 .highlight:hover .delete {
@@ -142,6 +144,6 @@ export default {
   display: block;
   font-size: 14px;
   -webkit-font-smoothing: subpixel-antialiased;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
 </style>

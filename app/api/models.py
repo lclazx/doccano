@@ -143,6 +143,24 @@ class Seq2seqProject(Project):
         return Seq2seqStorage(data, self)
 
 
+class SpoProject(Project):
+    @property
+    def image(self):
+        return staticfiles_storage.url('assets/images/cats/seq2seq.jpg')
+
+    def get_bundle_name(self):
+        return 'spo'
+
+    def get_bundle_name_upload(self):
+        return 'upload_spo'
+
+    def get_bundle_name_download(self):
+        return 'download_spo'
+
+    def get_annotation_class(self):
+        return SpoAnnotation
+
+
 class Label(models.Model):
     PREFIX_KEYS = (
         ('ctrl', 'ctrl'),
@@ -229,6 +247,58 @@ class SequenceAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'label', 'start_offset', 'end_offset')
+
+
+# class SpoAnnotation(Annotation):
+#     document = models.ForeignKey(Document, related_name='spo_annotations', on_delete=models.CASCADE)
+#     start_offset = models.IntegerField()
+#     end_offset = models.IntegerField()
+#     label = models.IntegerField()
+
+#     def clean(self):
+#         if self.start_offset >= self.end_offset:
+#             raise ValidationError('start_offset is after end_offset')
+#         if self.label is not 0 or self.label is not 1:
+#             raise ValidationError('label type invalid')
+
+#     class Meta:
+#         unique_together = ('document', 'user', 'label', 'start_offset', 'end_offset')
+
+class SpoAnnotation(Annotation):
+    document = models.ForeignKey(Document, related_name='spo_annotations', on_delete=models.CASCADE)
+    subject_start_offset = models.IntegerField()
+    subject_end_offset = models.IntegerField()
+    object_start_offset = models.IntegerField()
+    object_end_offset = models.IntegerField()
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.subject_start_offset >= self.subject_end_offset:
+            raise ValidationError(' subject start is after subject end')
+        if self.object_start_offset >= self.object_end_offset:
+            raise ValidationError('object start is after object end')
+        if self.subject_start_offset >= self.object_start_offset and self.subject_start_offset <= self.object_end_offset:
+            raise ValidationError('subject intersected with object')
+        if self.subject_end_offset >= self.object_start_offset and self.subject_end_offset <= self.object_end_offset:
+            raise ValidationError('subject intersected with object')
+        if self.object_start_offset >= self.subject_start_offset and self.object_start_offset <= self.subject_end_offset:
+            raise ValidationError('subject intersected with object')
+        if self.object_end_offset >= self.subject_start_offset and self.object_end_offset <= self.subject_end_offset:
+            raise ValidationError('subject intersected with object')
+
+    class Meta:
+        unique_together = ('document', 'subject_start_offset', 'subject_end_offset',
+                           'object_start_offset', 'object_end_offset', 'label')
+
+
+# class SpoRelation(models.Model):
+#     document = models.ForeignKey(Document, related_name='spo_relations', on_delete=models.CASCADE)
+#     subject = models.ForeignKey(SpoAnnotation, on_delete=models.CASCADE)
+#     obj = models.ForeignKey(SpoAnnotation, on_delete=models.CASCADE)
+#     relation = models.ForeignKey(Label, on_delete=models.CASCADE)
+
+#     class Meta:
+#         unique_together = ('document', 'user', 'label', 'subject', 'obj')
 
 
 class Seq2seqAnnotation(Annotation):

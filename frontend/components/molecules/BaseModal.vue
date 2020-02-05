@@ -1,16 +1,14 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="800px"
-  >
+  <v-dialog v-model="dialog" width="800px">
+    <!-- eslint-disable-next-line vue/no-unused-vars -->
     <template v-slot:activator="{ on }">
       <v-btn
-        class="mb-2 text-capitalize"
         :class="classObject"
         :color="color"
         :outlined="isOutlined"
         :disabled="disabled"
-        @click="dialog=true"
+        @click="dialog = true"
+        class="mb-2 text-capitalize"
       >
         {{ text }}
       </v-btn>

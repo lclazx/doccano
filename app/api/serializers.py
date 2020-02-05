@@ -8,7 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 from .models import Label, Project, Document, RoleMapping, Role
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, SpoAnnotation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -120,7 +120,6 @@ class TextClassificationProjectSerializer(ProjectSerializer):
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
 
-
     class Meta:
         model = SequenceLabelingProject
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
@@ -179,6 +178,18 @@ class SequenceAnnotationSerializer(serializers.ModelSerializer):
         read_only_fields = ('user',)
 
 
+class SpoAnnotationSerializer(serializers.ModelSerializer):
+    #label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+
+    class Meta:
+        model = SequenceAnnotation
+        fields = ('id', 'prob', 'label', 'subject_start_offset', 'subject_end_offset',
+                  'object_start_offset', 'object_end_offset', 'user', 'document')
+        read_only_fields = ('user',)
+
+
 class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
     document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
@@ -186,6 +197,26 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
         model = Seq2seqAnnotation
         fields = ('id', 'text', 'user', 'document', 'prob')
         read_only_fields = ('user',)
+
+
+# class SpoAnnotationSerializer(serializers.ModelSerializer):
+#     document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+
+#     class Meta:
+#         model = SpoAnnotation
+#         fields = ('id', 'document', 'user', 'label', 'start_offset', 'end_offset')
+#         read_only_fields = ('user')
+
+
+# class SpoRelationSerializer(serializers.ModelSerializer):
+#     document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+#     subject = serializers.PrimaryKeyRelatedField(queryset=SpoAnnotation.objects.all())
+#     obj = serializers.PrimaryKeyRelatedField(queryset=SpoAnnotation.objects.all())
+
+#     class Meta:
+#         model = SpoRelation
+#         fields = ('document', 'user', 'label', 'subject', 'obj')
+#         read_only_fields = ('user')
 
 
 class RoleSerializer(serializers.ModelSerializer):

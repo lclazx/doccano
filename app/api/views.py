@@ -18,6 +18,7 @@ from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
+from .serializers import SpoAnnotationSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
@@ -364,3 +365,17 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RoleMappingSerializer
     lookup_url_kwarg = 'rolemapping_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+
+class SpoAnnotationList(generics.ListAPIView):
+    serializer_class = SpoAnnotationSerializer
+    pagination_class = None
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return project.labels
+
+    def perform_create(self, serializer):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        serializer.save(project=project)

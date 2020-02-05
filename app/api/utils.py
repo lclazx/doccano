@@ -193,6 +193,37 @@ class SequenceLabelingStorage(BaseStorage):
         return annotations
 
 
+# class SpoLabelingStorage(BaseStorage):
+#     """Upload jsonl for spo labeling.
+
+#     The format is as following:
+#     {
+#         "text":"The Capital of China is Beijing",
+#         "labels":[
+#             {
+#                 "object":[4,10],
+#                 "subject":[15,19],
+#                 "relation":"capital"]
+#             }
+#         ]
+#     }
+#     """
+
+#     @trasaction.atomic
+#     def save(self, user):
+#         saved_labels = {label.text: label for label in self.project.labels.all()}
+#         for data in self.data:
+#             docs = self.save_doc(data)
+#             labels = self.extract_label(data)
+#             unique_labels = self.extract_unique_labels(labels)
+#             unique_labels = self.exclude_created_labels(unique_labels, saved_labels)
+#             unique_labels = self.to_serializer_format(unique_labels, saved_labels)
+#             new_labels = self.save_label(unique_labels)
+#             saved_labels = self.update_saved_labels(saved_labels, new_labels)
+#             annotations = self.make_annotations(docs, labels, saved_labels)
+#             self.save_annotation(annotations, user)
+
+
 class Seq2seqStorage(BaseStorage):
     """Store json for seq2seq.
 
@@ -245,6 +276,7 @@ class CoNLLParser(FileParser):
     ...
     ```
     """
+
     def parse(self, file):
         data = []
         file = EncodedIO(file)
@@ -302,6 +334,7 @@ class PlainTextParser(FileParser):
     ...
     ```
     """
+
     def parse(self, file):
         file = EncodedIO(file)
         file = io.TextIOWrapper(file, encoding=file.encoding)
@@ -326,6 +359,7 @@ class CSVParser(FileParser):
     ...
     ```
     """
+
     def parse(self, file):
         file = EncodedIO(file)
         file = io.TextIOWrapper(file, encoding=file.encoding)
