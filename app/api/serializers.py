@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 
 
 from .models import Label, Project, Document, RoleMapping, Role
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
+from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, SpoProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, SpoAnnotation
 
 
@@ -127,6 +127,14 @@ class SequenceLabelingProjectSerializer(ProjectSerializer):
         read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
+class SpoLabelingProjectSerializer(ProjectSerializer):
+    class Meta:
+        model = SpoProject
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+                  'updated_at', 'randomize_document_order')
+        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+
+
 class Seq2seqProjectSerializer(ProjectSerializer):
 
     class Meta:
@@ -141,7 +149,8 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
         Project: ProjectSerializer,
         TextClassificationProject: TextClassificationProjectSerializer,
         SequenceLabelingProject: SequenceLabelingProjectSerializer,
-        Seq2seqProject: Seq2seqProjectSerializer
+        Seq2seqProject: Seq2seqProjectSerializer,
+        SpoProject: SpoLabelingProjectSerializer
     }
 
 

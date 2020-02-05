@@ -15,10 +15,12 @@ from .managers import AnnotationManager, Seq2seqAnnotationManager
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
+SPO = 'Spo'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (SPO, 'Spo'),
 )
 
 
@@ -149,13 +151,13 @@ class SpoProject(Project):
         return staticfiles_storage.url('assets/images/cats/seq2seq.jpg')
 
     def get_bundle_name(self):
-        return 'spo'
+        return 'spo_labeling'
 
     def get_bundle_name_upload(self):
-        return 'upload_spo'
+        return 'upload_spo_labeling'
 
     def get_bundle_name_download(self):
-        return 'download_spo'
+        return 'download_spo_labeling'
 
     def get_annotation_class(self):
         return SpoAnnotation

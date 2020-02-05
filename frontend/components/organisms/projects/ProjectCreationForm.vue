@@ -1,11 +1,11 @@
 <template>
   <base-card
-    title="Add Project"
-    agree-text="Create"
-    cancel-text="Cancel"
     :disabled="!valid"
     @agree="create"
     @cancel="cancel"
+    title="Add Project"
+    agree-text="Create"
+    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -70,7 +70,8 @@ export default {
       default: () => [
         'Text Classification',
         'Sequence Labeling',
-        'Sequence to sequence'
+        'Sequence to sequence',
+        'SPO Labeling'
       ] // Todo: Get project types from backend server.
     }
   },
@@ -99,6 +100,8 @@ export default {
         return 'SequenceLabeling'
       } else if (this.projectType === 'Sequence to sequence') {
         return 'Seq2seq'
+      } else if (this.projectType === 'SPO Labeling') {
+        return 'Spo'
       }
     },
     getResourceType() {
@@ -108,6 +111,8 @@ export default {
         return 'SequenceLabelingProject'
       } else if (this.projectType === 'Sequence to sequence') {
         return 'Seq2seqProject'
+      } else if (this.projectType === 'SPO Labeling') {
+        return 'SpoProject'
       }
     },
     validate() {
