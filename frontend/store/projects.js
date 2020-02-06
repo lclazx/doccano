@@ -35,6 +35,8 @@ export const getters = {
       return 'sequence-labeling'
     } else if (state.current.project_type === 'Seq2seq') {
       return 'sequence-to-sequence'
+    } else if (state.current.project_type === 'Spo') {
+      return 'spo-labeling'
     } else {
       return ''
     }
@@ -82,7 +84,7 @@ export const getters = {
         csv,
         json
       ]
-    } else if (state.current.project_type === 'SequenceLabeling') {
+    } else if (state.current.project_type === 'SequenceLabeling' || state.current.project_type === 'Spo') {
       json.examples = [
         '{"text": "EU rejects German call to boycott British lamb.", "labels": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}\n',
         '{"text": "Peter Blackburn", "labels": [ [0, 15, "PERSON"] ]}\n',

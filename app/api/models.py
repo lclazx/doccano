@@ -162,6 +162,14 @@ class SpoProject(Project):
     def get_annotation_class(self):
         return SpoAnnotation
 
+    def get_annotation_serializer(self):
+        from .serializers import SpoAnnotationSerializer
+        return SpoAnnotationSerializer
+
+    def get_storage(self, data):
+        from .utils import SequenceLabelingStorage
+        return SequenceLabelingStorage(data, self)
+
 
 class Label(models.Model):
     PREFIX_KEYS = (
