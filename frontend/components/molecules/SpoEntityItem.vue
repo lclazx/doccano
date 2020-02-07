@@ -1,3 +1,4 @@
+<!--  eslint-disable vue/valid-template-root -->
 <template>
   <v-menu v-if="label" v-model="showMenu" offset-y>
     <template v-slot:activator="{ on }">
@@ -21,16 +22,58 @@
         :key="i"
         v-shortkey.once="[item.suffix_key]"
         @shortkey="update(item)"
-        @click="update(item)"
+        @mouseenter="showCascade(item, i)"
       >
+        <v-menu v-model="showCascadeMenu[i]" :offset-x="true">
+          <!-- eslint-disable-next-line vue/no-unused-vars -->
+          <template v-slot:activator="{ on }">
+            <v-list-item-title slot="activator" v-text="item.text" />
+          </template>
+          <v-list
+            dense
+            min-width="150"
+            max-height="400"
+            class="overflow-y-auto"
+          >
+            <v-list-item
+              v-for="(obj, obj_index) in objects"
+              :key="obj_index"
+              @click="makeRelation(obj, item)"
+            >
+              <v-list-item-content>
+                <v-list-item-title v-text="obj.text" />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-list-item-content>
           <v-list-item-title v-text="item.text" />
+          <v-list-item-title />
         </v-list-item-content>
-        <v-list-item-action>
-          <v-list-item-action-text v-text="item.suffix_key" />
-        </v-list-item-action>
+        <v-list-item-icon>
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-list-item-icon>
       </v-list-item>
     </v-list>
+    <!-- <v-menu
+      v-model="showCascadeMenu"
+      :position-x="x"
+      :position-y="y"
+      absolute
+      offset-y
+    >
+      <v-list dense min-width="150" max-height="400" class="overflow-y-auto">
+        <v-list-item
+          v-for="(item, i) in objects"
+          :key="i"
+          @click="makeSpo(item)"
+        >
+          <v-list-item-content>
+            <v-list-item-title v-text="item.text" />
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-menu> -->
   </v-menu>
   <!-- eslint-disable-next-line vue/valid-template-root -->
   <span v-else>{{ content }}</span>
@@ -61,17 +104,28 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    objects: {
+      type: Array,
+      default: () => [],
+      required: true
     }
   },
   data() {
     return {
-      showMenu: false
+      showMenu: false,
+      showCascadeMenu: [],
+      x: 0,
+      y: 0
     }
   },
   computed: {
     textColor() {
       return idealColor(this.color)
     }
+  },
+  created() {
+    this.showCascadeMenu = [...Array(this.relationLabels.length)].map(_ => false)
   },
   methods: {
     update(label) {
@@ -80,6 +134,15 @@ export default {
     },
     remove() {
       this.$emit('remove')
+    },
+    showCascade(item, i) {
+      console.log(this.objects)
+      this.showCascadeMenu = [...Array(this.relationLabels.length)].map(_ => false)
+      this.showCascadeMenu[i] = true
+    },
+    makeRelation(obj, relation) {
+      this.$emit('makeRelation', { obj, relation })
+      this.showCascadeMenu = [...Array(this.relationLabels.length)].map(_ => false)
     }
   }
 }

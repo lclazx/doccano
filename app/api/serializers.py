@@ -193,7 +193,7 @@ class SpoAnnotationSerializer(serializers.ModelSerializer):
     document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
     class Meta:
-        model = SequenceAnnotation
+        model = SpoAnnotation
         fields = ('id', 'prob', 'label', 'subject_start_offset', 'subject_end_offset',
                   'object_start_offset', 'object_end_offset', 'user', 'document')
         read_only_fields = ('user',)

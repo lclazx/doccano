@@ -12,6 +12,8 @@
       :color="chunk.color"
       :labels="labels"
       :relationLabels="relationLabels"
+      :objects="objects"
+      @makeRelation="makeRelation(chunk, $event.obj, $event.relation)"
       @remove="deleteAnnotation(chunk.id)"
       @update="updateEntity($event.id, chunk.id)"
     /><v-menu
@@ -73,11 +75,26 @@ export default {
       default: () => [],
       required: true
     },
-    updateEntity: { type: Function, default: () => [], required: true },
-    addEntity: { type: Function, default: () => [], required: true }
+    updateEntity: {
+      type: Function,
+      default: () => [],
+      required: true
+    },
+    addEntity: { type: Function, default: () => [], required: true },
+    makeRelation: {
+      type: Function,
+      default: () => [],
+      required: true
+    }
   },
   data() {
-    return { showMenu: false, x: 0, y: 0, start: 0, end: 0 }
+    return {
+      showMenu: false,
+      x: 0,
+      y: 0,
+      start: 0,
+      end: 0
+    }
   },
   computed: {
     sortedEntities() {
@@ -93,7 +110,9 @@ export default {
         chunks.push({
           label: null,
           color: null,
-          text: this.text.slice(startOffset, entity.start_offset)
+          text: this.text.slice(startOffset, entity.start_offset),
+          start_offset: startOffset,
+          end_offset: entity.start_offset
         })
         startOffset = entity.end_offset
         const label = this.labelObject[entity.label]
@@ -101,13 +120,17 @@ export default {
           id: entity.id,
           label: label.text,
           color: label.background_color,
-          text: this.text.slice(entity.start_offset, entity.end_offset)
+          text: this.text.slice(entity.start_offset, entity.end_offset),
+          start_offset: entity.start_offset,
+          end_offset: entity.end_offset
         })
       }
       chunks.push({
         label: null,
         color: null,
-        text: this.text.slice(startOffset, this.text.length)
+        text: this.text.slice(startOffset, this.text.length),
+        start_offset: startOffset,
+        end_offset: this.text.length
       })
 
       return chunks
@@ -118,6 +141,11 @@ export default {
         obj[label.id] = label
       }
       return obj
+    },
+    objects() {
+      const objs = this.entities.filter(x => x.label === 0)
+      console.log(objs)
+      return objs
     }
   },
   methods: {
@@ -177,6 +205,11 @@ export default {
         this.end = 0
       }
     }
+    // makeRelation(subject, obj, relation) {
+    //   console.log(subject)
+    //   console.log(obj)
+    //   console.log(relation)
+    // }
   }
 }
 </script>
