@@ -7,7 +7,7 @@
         :relationLabels="items"
         :text="currentDoc.text"
         :entities="computedLabeledWords"
-        :delete-annotation="removeEntity"
+        :delete-annotation="removeLabeledWord"
         :update-entity="updateEntity"
         :add-entity="addEntity"
         :make-relation="makeRelation"
@@ -21,11 +21,11 @@
         :items="relations"
         show-select
       >
-        <!-- <template v-slot:top>
-          <v-btn type="primary">
-            删除
-          </v-btn>
-        </template> -->
+        <template v-slot:item.action="{item}">
+          <v-icon @click="deleteRelation(item)" small>
+            delete
+          </v-icon>
+        </template>
       </v-data-table>
     </v-card>
   </div>
@@ -61,7 +61,8 @@ export default {
       headers: [
         { text: '主语', align: 'left', sortable: false, value: 'subject_text' },
         { text: '宾语', align: 'center', sortable: false, value: 'object_text' },
-        { text: '关系', align: 'right', sortable: false, value: 'relation_text' }
+        { text: '关系', align: 'right', sortable: false, value: 'relation_text' },
+        { text: '操作', aligh: 'right', value: 'action' }
       ]
 
     }
@@ -113,11 +114,6 @@ export default {
           )
         }
       }
-      // return [{
-      //   subject_text: '阿兰斯基',
-      //   object_text: '古巴',
-      //   relation_text: '国籍'
-      // }]
       return result
     }
   },
@@ -135,12 +131,19 @@ export default {
       'updateAnnotation',
       'addAnnotation'
     ]),
-    removeEntity(annotationId) {
-      const payload = {
-        annotationId,
-        projectId: this.$route.params.id
-      }
-      this.deleteAnnotation(payload)
+    removeLabeledWord(chunk) {
+      this.labeledWords = this.labeledWords.filter(x =>
+        !(x.start_offset === chunk.start_offset && x.end_offset === chunk.end_offset))
+      const relationPayloads = this.relations.filter(x => (x.annotation.subject_start_offset === chunk.start_offset && x.annotation.subject_end_offset === chunk.end_offset) ||
+      (x.annotation.object_start_offset === chunk.start_offset && x.annotation.object_end_offset === chunk.end_offset)).map((x) => {
+        return {
+          annotationId: x.annotation.id,
+          projectId: this.$route.params.id
+        }
+      })
+      relationPayloads.forEach((payload) => {
+        this.deleteAnnotation(payload)
+      })
     },
     updateEntity(labelId, annotationId) {
       const payload = {
@@ -173,14 +176,30 @@ export default {
       for (const item of this.currentDoc.annotations) {
         if (
           payload.subject_start_offset === item.subject_start_offset &&
-payload.subject_end_offset === item.subject_end_offset &&
-payload.object_start_offset === item.object_start_offset &&
-payload.object_end_offset === item.object_end_offset) {
+          payload.subject_end_offset === item.subject_end_offset &&
+          payload.object_start_offset === item.object_start_offset &&
+          payload.object_end_offset === item.object_end_offset) {
           this.updateEntity(payload, item.id)
           return
         }
       }
-      this.addAnnotation(payload)
+      const _this = this
+      this.addAnnotation(payload).then((res) => {
+        const labeledWords = []
+        for (const labeledWord of _this.labeledWords) {
+          if (labeledWord.start_offset === payload.subject_start_offset && labeledWord.end_offset === payload.subject_end_offset) { continue }
+          if (labeledWord.start_offset === payload.object_start_offset && labeledWord.end_offset === payload.object_end_offset) { continue }
+          labeledWords.push(labeledWord)
+        }
+        _this.labeledWords = labeledWords
+      })
+    },
+    deleteRelation(item) {
+      const payload = {
+        annotationId: item.annotation.id,
+        projectId: this.$route.params.id
+      }
+      this.deleteAnnotation(payload)
     }
   }
 }

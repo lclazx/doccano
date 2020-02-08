@@ -55,25 +55,6 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list>
-    <!-- <v-menu
-      v-model="showCascadeMenu"
-      :position-x="x"
-      :position-y="y"
-      absolute
-      offset-y
-    >
-      <v-list dense min-width="150" max-height="400" class="overflow-y-auto">
-        <v-list-item
-          v-for="(item, i) in objects"
-          :key="i"
-          @click="makeSpo(item)"
-        >
-          <v-list-item-content>
-            <v-list-item-title v-text="item.text" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-menu> -->
   </v-menu>
   <!-- eslint-disable-next-line vue/valid-template-root -->
   <span v-else>{{ content }}</span>
@@ -143,6 +124,7 @@ export default {
     makeRelation(obj, relation) {
       this.$emit('makeRelation', { obj, relation })
       this.showCascadeMenu = [...Array(this.relationLabels.length)].map(_ => false)
+      this.showMenu = false
     }
   }
 }

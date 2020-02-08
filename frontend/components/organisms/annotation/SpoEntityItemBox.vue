@@ -14,7 +14,7 @@
       :relationLabels="relationLabels"
       :objects="objects"
       @makeRelation="makeRelation(chunk, $event.obj, $event.relation)"
-      @remove="deleteAnnotation(chunk.id)"
+      @remove="deleteAnnotation(chunk)"
       @update="updateEntity($event.id, chunk.id)"
     /><v-menu
       v-model="showMenu"
